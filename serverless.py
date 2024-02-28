@@ -2,6 +2,7 @@ import os
 from adb_shell.adb_device import AdbDeviceUsb
 from adb_shell.auth.sign_pythonrsa import PythonRSASigner
 
+
 def kill_adb_server():
     # Check if the ADB server is running
     adb_server_running = os.system('adb devices') == 0
@@ -23,5 +24,10 @@ signer = PythonRSASigner(pub, priv)
 device = AdbDeviceUsb()
 device.connect(rsa_keys=[signer], auth_timeout_s=0.1)
 
-# Send a shell command
-response = device.shell('input touchscreen swipe 800 500 100 500 100')
+# Capture a screenshot
+device.shell('screencap -p /sdcard/screenshot.png')
+device.pull('/sdcard/screenshot.png', 'screenshot.png')
+device.shell('rm /sdcard/screenshot.png')
+
+# Test swipe command
+response = device.shell('input touchscreen swipe 800 1500 100 1500 100')
