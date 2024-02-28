@@ -24,14 +24,16 @@ signer = PythonRSASigner(pub, priv)
 device = AdbDeviceUsb()
 device.connect(rsa_keys=[signer], auth_timeout_s=0.1)
 
-# Check if the screenshot file exists and delete it if it does
-if device.shell('test -f /sdcard/screenshot.png') == "":
+
+def create_screenshot():
+    # Check if the screenshot file exists and delete it if it does
+    if device.shell('test -f /sdcard/screenshot.png') == "":
+        device.shell('rm /sdcard/screenshot.png')
+    # Capture a screenshot
+    device.shell('screencap -p /sdcard/screenshot.png')
+    device.pull('/sdcard/screenshot.png', 'screenshot.png')
     device.shell('rm /sdcard/screenshot.png')
 
-# Capture a screenshot
-device.shell('screencap -p /sdcard/screenshot.png')
-device.pull('/sdcard/screenshot.png', 'screenshot.png')
-device.shell('rm /sdcard/screenshot.png')
 
 # Test swipe command
 response = device.shell('input touchscreen swipe 800 1500 100 1500 100')
