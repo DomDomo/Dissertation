@@ -24,21 +24,39 @@ def get_device():
     return devices[0]
 
 
+def toggle_pointer_location(device):
+    # Get the current pointer location value
+    current_value = int(device.shell(
+        'settings get system pointer_location').strip())
+
+    # Toggle the value
+    new_value = 1 - current_value
+
+    # Set the new value
+    device.shell(f'settings put system pointer_location {new_value}')
+
+
 def get_screen_dimensions(device):
     output = device.shell("wm size")
     width, height = map(int, output.split()[-1].split("x"))
     return width, height
 
 
-def create_screenshot(device):
+def create_screenshot(device, name="screenshot"):
     # Check if the screenshot file exists and delete it if it does
-    if device.shell('test -f /sdcard/screenshot.png') == "":
-        device.shell('rm /sdcard/screenshot.png')
+    if device.shell(f'test -f /sdcard/{name}.png') == "":
+        device.shell(f'rm /sdcard/{name}.png')
 
-    # Capture a screenshot
-    device.shell('screencap -p /sdcard/screenshot.png')
-    device.pull('/sdcard/screenshot.png', 'screenshot.png')
-    device.shell('rm /sdcard/screenshot.png')
+    # Capture and pull screenshot
+    device.shell(f'screencap -p /sdcard/{name}.png')
+    device.pull(f'/sdcard/{name}.png', f'{name}.png')
+
+    # Delete screenshot from device
+    device.shell(f'rm /sdcard/{name}.png')
+
+
+def tap_screen(device, x, y):
+    device.shell(f"input touchscreen tap {x} {y}")
 
 
 def randomly_tap(device, count, delay):
@@ -48,6 +66,6 @@ def randomly_tap(device, count, delay):
         x = random.randint(0, width)
         y = random.randint(0, height)
 
-        device.shell(f"input touchscreen tap {x} {y}")
+        tap_screen(device, x, y)
 
         time.sleep(delay)
