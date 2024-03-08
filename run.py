@@ -7,11 +7,11 @@ if __name__ == "__main__":
 
     device = get_device()
 
-    toggle_pointer_location(device)
+    # toggle_pointer_location(device)
 
     # for _ in range(50):
     #     tap_screen(device, 500, 1000)
 
     # randomly_tap(device, count=200, delay=0.1)
 
-    create_screenshot(device)
+    create_screenshot(device, crop=True)

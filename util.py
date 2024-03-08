@@ -1,6 +1,7 @@
 import os
 import time
 import random
+from PIL import Image
 from ppadb.client import Client as AdbClient
 
 
@@ -42,7 +43,7 @@ def get_screen_dimensions(device):
     return width, height
 
 
-def create_screenshot(device, name="screenshot"):
+def create_screenshot(device, name="screenshot", crop=False):
     # Check if the screenshot file exists and delete it if it does
     if device.shell(f'test -f /sdcard/{name}.png') == "":
         device.shell(f'rm /sdcard/{name}.png')
@@ -53,6 +54,30 @@ def create_screenshot(device, name="screenshot"):
 
     # Delete screenshot from device
     device.shell(f'rm /sdcard/{name}.png')
+
+    if crop:
+        crop_notfication_bar(name)
+
+
+def crop_notfication_bar(image_name):
+    # Open image using PIL
+    img = Image.open(f'{image_name}.png')
+    width, height = img.size
+    pixels = img.load()
+
+    # Get the color of the top-left pixel
+    top_color = pixels[0, 0]
+
+    # Find the first row with a different color
+    for y in range(height):
+        if pixels[0, y] != top_color:
+            break
+
+    # Crop the image
+    img_cropped = img.crop((0, y, width, height))
+
+    # Save the cropped image
+    img_cropped.save(f'{image_name}.png')
 
 
 def tap_screen(device, x, y):
