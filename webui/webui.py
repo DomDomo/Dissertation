@@ -1,6 +1,5 @@
 import os
 import glob
-import shutil
 import torch
 from PIL import Image, ImageDraw
 from torchvision import transforms
@@ -23,32 +22,24 @@ def load_model_and_metadata():
 def detect_ui_elements(model, class_map, image_path, confidence_threshold=0.4):
     # Load and transform the input image
     img_transforms = transforms.ToTensor()
-    test_image = Image.open(image_path).convert('RGB')
-    img_input = img_transforms(test_image)
+    rgb_image = Image.open(image_path).convert('RGB')
+    img_input = img_transforms(rgb_image)
 
     # Get predictions
     pred = model([img_input])[1]
 
     # Draw bounding boxes and labels
-    draw = ImageDraw.Draw(test_image)
+    draw = ImageDraw.Draw(rgb_image)
     for i in range(len(pred[0]['boxes'])):
         conf_score = pred[0]['scores'][i]
         if conf_score > confidence_threshold:
             x1, y1, x2, y2 = pred[0]['boxes'][i]
             x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-            draw.rectangle([x1, y1, x2, y2], outline='red')
+            draw.rectangle([x1, y1, x2, y2], outline='red', width=4)
             label = class_map[str(int(pred[0]['labels'][i]))]
             draw.text((x1, y1), f"{label} {conf_score:.2f}", fill="red")
 
-    return test_image
-
-
-def get_image_paths(directory):
-    for root, _, files in os.walk(directory):
-        for file in files:
-            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
-                image_path = os.path.join(root, file)
-                print(image_path)
+    return rgb_image
 
 
 if __name__ == "__main__":
@@ -56,7 +47,7 @@ if __name__ == "__main__":
 
     image_paths = glob.glob('../idle_images/**/*.jpg', recursive=False)
 
-    confidence_threshold = 0.3
+    confidence_threshold = 0.5
 
     for image_path in image_paths:
 
