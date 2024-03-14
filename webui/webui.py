@@ -1,3 +1,6 @@
+import os
+import glob
+import shutil
 import torch
 from PIL import Image, ImageDraw
 from torchvision import transforms
@@ -20,7 +23,7 @@ def load_model_and_metadata():
 def detect_ui_elements(model, class_map, image_path, confidence_threshold=0.4):
     # Load and transform the input image
     img_transforms = transforms.ToTensor()
-    test_image = Image.open(image_path)
+    test_image = Image.open(image_path).convert('RGB')
     img_input = img_transforms(test_image)
 
     # Get predictions
@@ -40,17 +43,44 @@ def detect_ui_elements(model, class_map, image_path, confidence_threshold=0.4):
     return test_image
 
 
+def get_image_paths(directory):
+    for root, _, files in os.walk(directory):
+        for file in files:
+            if file.lower().endswith(('.jpg', '.jpeg', '.png', '.gif')):
+                image_path = os.path.join(root, file)
+                print(image_path)
+
+
 if __name__ == "__main__":
     model, class_map = load_model_and_metadata()
 
-    # Call the function with your image path
-    confidence_threshold = 0.5
-    current_image = "main"
+    image_paths = glob.glob('../idle_images/**/*.jpg', recursive=False)
 
-    current_image_path = f"./{current_image}.jpg"
-    altered_image = detect_ui_elements(
-        model, class_map, current_image_path, confidence_threshold)
+    confidence_threshold = 0.3
 
-    # Save the altered image
-    output_path = f"./altered_{current_image}_{confidence_threshold}.jpg"
-    altered_image.save(output_path)
+    for image_path in image_paths:
+
+        # Extract game and title from the image path
+        game, title = image_path.split('\\')[1:]
+
+        # Construct the prediction folder path
+        prediction_folder = os.path.join(
+            '../idle_images', game, 'webui_prediction', f"{confidence_threshold:.2f}")
+
+        # Check if the prediction folder exists, create it if not
+        if not os.path.exists(prediction_folder):
+            os.makedirs(prediction_folder)
+
+        # Make predictions (you've already implemented this)
+        altered_image = detect_ui_elements(
+            model, class_map, image_path, confidence_threshold)
+
+        # Save the altered image with the new title and path
+        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
+        new_image_path = os.path.join(prediction_folder, new_title)
+        altered_image.save(new_image_path)
+
+        print(
+            f"Image '{title}' from '{game}' predicted and saved in '{prediction_folder}'")
+
+    print("Done.")
