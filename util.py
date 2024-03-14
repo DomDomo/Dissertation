@@ -43,27 +43,29 @@ def get_screen_dimensions(device):
     return width, height
 
 
-def create_screenshot(device, name="screenshot", crop=False):
+def create_screenshot(device, name="screenshot", crop=False, image_format="png"):
     # Check if the screenshot file exists and delete it if it does
-    if device.shell(f'test -f /sdcard/{name}.png') == "":
-        device.shell(f'rm /sdcard/{name}.png')
+    if device.shell(f'test -f /sdcard/{name}.{image_format}') == "":
+        device.shell(f'rm /sdcard/{name}.{image_format}')
 
     # Capture and pull screenshot
-    device.shell(f'screencap -p /sdcard/{name}.png')
-    device.pull(f'/sdcard/{name}.png', f'{name}.png')
+    device.shell(f'screencap -p /sdcard/{name}.{image_format}')
+    device.pull(f'/sdcard/{name}.{image_format}', f'{name}.{image_format}')
 
     # Delete screenshot from device
-    device.shell(f'rm /sdcard/{name}.png')
+    device.shell(f'rm /sdcard/{name}.{image_format}')
 
     if crop:
-        crop_notfication_bar(name)
+        crop_notification_bar(name, image_format)
 
 
-def crop_notfication_bar(image_name):
-    # Open image using PIL
-    img = Image.open(f'{image_name}.png')
-    width, height = img.size
-    pixels = img.load()
+def crop_notification_bar(image_name, image_format):
+    img = Image.open(f'{image_name}.{image_format}')
+
+    img_rgb = img.convert("RGB")
+
+    width, height = img_rgb.size
+    pixels = img_rgb.load()
 
     # Get the color of the top-left pixel
     top_color = pixels[0, 0]
@@ -74,10 +76,10 @@ def crop_notfication_bar(image_name):
             break
 
     # Crop the image
-    img_cropped = img.crop((0, y, width, height))
+    img_cropped = img_rgb.crop((0, y, width, height))
 
-    # Save the cropped image
-    img_cropped.save(f'{image_name}.png')
+    # Save the cropped image in the specified format
+    img_cropped.save(f'{image_name}.{image_format}')
 
 
 def tap_screen(device, x, y):

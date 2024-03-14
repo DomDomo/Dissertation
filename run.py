@@ -14,4 +14,5 @@ if __name__ == "__main__":
 
     # randomly_tap(device, count=200, delay=0.1)
 
-    create_screenshot(device, crop=True)
+    create_screenshot(device, name="web",
+                      crop=True, image_format="jpg")
