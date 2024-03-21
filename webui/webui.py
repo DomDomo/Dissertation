@@ -30,6 +30,7 @@ def detect_ui_elements(model, class_map, image_path, confidence_threshold=0.4):
 
     # Draw bounding boxes and labels
     draw = ImageDraw.Draw(rgb_image)
+    print(len(pred[0]['boxes']))
     for i in range(len(pred[0]['boxes'])):
         conf_score = pred[0]['scores'][i]
         if conf_score > confidence_threshold:
@@ -47,9 +48,9 @@ if __name__ == "__main__":
 
     image_paths = glob.glob('../idle_images/**/*.jpg', recursive=False)
 
-    confidence_threshold = 0.5
+    confidence_threshold = 0.2
 
-    for image_path in image_paths:
+    for image_path in image_paths[:3]:
 
         # Extract game and title from the image path
         game, title = image_path.split('\\')[1:]

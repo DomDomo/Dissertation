@@ -10,10 +10,10 @@ load_dotenv()
 ROOT_IMAGE_FOLDER = "../idle_images"
 
 ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
-ROBOFLOW_PROJECT = "gui-detection-lygbf"
+ROBOFLOW_PROJECT = "hasdkfjhalkvuasdhafjlkasdhfheui"
 ROBOFLOW_PROJECT_VERSION = 1
 
-MODEL_NAME = "huawei"
+MODEL_NAME = "hallym"
 
 
 def detect_ui_elements(model, confidence_threshold, overlap_threshold, image_path):
@@ -50,10 +50,10 @@ if __name__ == "__main__":
 
     image_paths = glob.glob(f'{ROOT_IMAGE_FOLDER}/**/*.jpg', recursive=False)
 
-    confidence_threshold = 0.2
+    confidence_threshold = 0.3
     overlap_threshold = 0.5
 
-    for image_path in image_paths[:1]:
+    for image_path in image_paths:
 
         # Extract game and title from the image path
         game, title = image_path.split('\\')[1:]
