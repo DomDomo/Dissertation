@@ -10,10 +10,13 @@ load_dotenv()
 ROOT_IMAGE_FOLDER = "../idle_images"
 
 ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
-ROBOFLOW_PROJECT = "hasdkfjhalkvuasdhafjlkasdhfheui"
-ROBOFLOW_PROJECT_VERSION = 1
+# ROBOFLOW_PROJECT = "hasdkfjhalkvuasdhafjlkasdhfheui"
+# ROBOFLOW_PROJECT_VERSION = 1
+# MODEL_NAME = "hallym"
 
-MODEL_NAME = "hallym"
+ROBOFLOW_PROJECT = "gui-detection-elc31"
+ROBOFLOW_PROJECT_VERSION = 3
+MODEL_NAME = "hauwei"
 
 
 def detect_ui_elements(model, confidence_threshold, overlap_threshold, image_path):
@@ -25,6 +28,10 @@ def detect_ui_elements(model, confidence_threshold, overlap_threshold, image_pat
         image_path, confidence=confidence_threshold, overlap=overlap_threshold).json()
 
     labels = [item["class"] for item in pred["predictions"]]
+
+    box_num = len(pred["predictions"])
+
+    print(f"Boxes: {box_num}")
 
     detections = sv.Detections.from_inference(pred)
     red = sv.Color(r=255, g=0, b=0)
@@ -39,7 +46,7 @@ def detect_ui_elements(model, confidence_threshold, overlap_threshold, image_pat
     annotated_image = label_annotator.annotate(
         scene=annotated_image, detections=detections, labels=labels)
 
-    return annotated_image
+    return annotated_image, box_num
 
 
 if __name__ == "__main__":
@@ -50,7 +57,7 @@ if __name__ == "__main__":
 
     image_paths = glob.glob(f'{ROOT_IMAGE_FOLDER}/**/*.jpg', recursive=False)
 
-    confidence_threshold = 0.3
+    confidence_threshold = 0.2
     overlap_threshold = 0.5
 
     for image_path in image_paths:
@@ -67,11 +74,11 @@ if __name__ == "__main__":
             os.makedirs(prediction_folder)
 
         # Make predictions (you've already implemented this)
-        altered_image = detect_ui_elements(
+        altered_image, box_num = detect_ui_elements(
             model, confidence_threshold, overlap_threshold, image_path)
 
         # Save the altered image with the new title and path
-        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
+        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}_{box_num}.jpg"
         new_image_path = os.path.join(prediction_folder, new_title)
         cv2.imwrite(new_image_path, altered_image)
 

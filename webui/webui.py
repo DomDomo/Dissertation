@@ -30,8 +30,11 @@ def detect_ui_elements(model, class_map, image_path, confidence_threshold=0.4):
 
     # Draw bounding boxes and labels
     draw = ImageDraw.Draw(rgb_image)
-    print(len(pred[0]['boxes']))
-    for i in range(len(pred[0]['boxes'])):
+
+    box_num = len(pred[0]['boxes'])
+    print(f"Boxes: {box_num}")
+
+    for i in range(box_num):
         conf_score = pred[0]['scores'][i]
         if conf_score > confidence_threshold:
             x1, y1, x2, y2 = pred[0]['boxes'][i]
@@ -40,7 +43,7 @@ def detect_ui_elements(model, class_map, image_path, confidence_threshold=0.4):
             label = class_map[str(int(pred[0]['labels'][i]))]
             draw.text((x1, y1), f"{label} {conf_score:.2f}", fill="red")
 
-    return rgb_image
+    return rgb_image, box_num
 
 
 if __name__ == "__main__":
@@ -50,7 +53,7 @@ if __name__ == "__main__":
 
     confidence_threshold = 0.2
 
-    for image_path in image_paths[:3]:
+    for image_path in image_paths:
 
         # Extract game and title from the image path
         game, title = image_path.split('\\')[1:]
@@ -64,11 +67,11 @@ if __name__ == "__main__":
             os.makedirs(prediction_folder)
 
         # Make predictions (you've already implemented this)
-        altered_image = detect_ui_elements(
+        altered_image, box_num = detect_ui_elements(
             model, class_map, image_path, confidence_threshold)
 
         # Save the altered image with the new title and path
-        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
+        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}_{box_num}.jpg"
         new_image_path = os.path.join(prediction_folder, new_title)
         altered_image.save(new_image_path)
 
