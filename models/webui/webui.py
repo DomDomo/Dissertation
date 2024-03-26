@@ -34,7 +34,8 @@ def get_prediction_output(model, class_map, image_path):
                 "confidence": pred[0]['scores'][i].item(),
                 "class": class_map[str(int(pred[0]['labels'][i].item()))],
                 "class_id": int(pred[0]['labels'][i].item()),
-                "top_left": (int(x1), int(y1))
+                "top_left": (int(x1), int(y1)),
+                "bottom_right": (int(x2), int(y2))
             }
             for i, (x1, y1, x2, y2) in enumerate([box.tolist() for box in pred[0]['boxes']])
         ],

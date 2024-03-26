@@ -12,15 +12,15 @@ from models.webui.webui import get_webui_predictions
 
 ROOT_IMAGE_FOLDER = "./idle_images"
 
-HAUWEI_MODEL = "hauwei"
+HUAWEI_MODEL = "huawei"
 HALLYM_MODEL = "hallym"
 WEBUI_MODEL = "webui"
 
 
-MODEL = HAUWEI_MODEL # Choose model here <--------
+MODEL = WEBUI_MODEL # Choose model here <--------
 
 def get_model_results(model_name, image_path, overlap_threshold=0.5):
-    if model_name == HAUWEI_MODEL or model_name == HALLYM_MODEL:
+    if model_name == HUAWEI_MODEL or model_name == HALLYM_MODEL:
         return get_roboflow_predictions(model_name, image_path, overlap_threshold)
     elif model_name == WEBUI_MODEL:
         return get_webui_predictions(image_path)

@@ -6,7 +6,7 @@ load_dotenv()
 
 ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
 ROBOFLOW = {
-    "hauwei": {
+    "huawei": {
         "project": "gui-detection-elc31",
         "version": 3,
     },
@@ -40,12 +40,15 @@ def get_processed_predictions(model, image_path, overlap_threshold=0.5):
         del prediction['image_path']
         del prediction['prediction_type']
 
-        # Calculate the center point of the detection box
         top_left_x = prediction['x'] - prediction["width"] // 2
         top_left_y = prediction["y"] - prediction["height"] // 2
 
+        bottom_right_x = prediction['x'] + prediction["width"] // 2
+        bottom_right_y = prediction["y"] + prediction["height"] // 2
+
         # Add the center point to the prediction
         prediction['top_left'] = (top_left_x, top_left_y)
+        prediction['bottom_right'] = (bottom_right_x, bottom_right_y)
 
     return pred
 

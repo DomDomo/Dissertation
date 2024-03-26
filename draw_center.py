@@ -11,13 +11,17 @@ def draw_center_dots(image, pred):
     return image
     
 if __name__ == "__main__":
-    with open("huawei_predictions.json", 'r') as f:
+    with open("./huawei_predictions.json", 'r') as f:
         data = json.load(f)
 
     pred = data[0]
-    image_path = data[0]["image"]["image_path"]
+    image_path = data[0]["image"]["path"]
 
-    labels = [item["class"] for item in pred["predictions"]]
+
+    pred["predictions"] = \
+        [p for p in pred["predictions"] if p["confidence"] >= 0.2]
+
+    labels = [str(round(item["confidence"], 5)) for item in pred["predictions"]]
     detections = sv.Detections.from_inference(pred)
 
     label_annotator = sv.LabelAnnotator()
