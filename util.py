@@ -56,8 +56,9 @@ def create_screenshot(device, name="screenshot", crop=False, image_format="png")
     device.shell(f'rm /sdcard/{name}.{image_format}')
 
     if crop:
-        crop_notification_bar(name, image_format)
-
+        return crop_notification_bar(name, image_format)
+    
+    return 0
 
 def crop_notification_bar(image_name, image_format):
     img = Image.open(f'{image_name}.{image_format}')
@@ -81,8 +82,13 @@ def crop_notification_bar(image_name, image_format):
     # Save the cropped image in the specified format
     img_cropped.save(f'{image_name}.{image_format}')
 
+    return y
 
-def tap_screen(device, x, y):
+
+def tap_screen(device, x, y, duration):
+    # Swipe before tap:
+    # device.shell(f"input touchscreen swipe {x-2} {y} {x+2} {y} {duration}")
+
     device.shell(f"input touchscreen tap {x} {y}")
 
 

@@ -51,7 +51,6 @@ def get_prediction_output(model, class_map, image_path):
 
 
 def get_webui_predictions(image_path):
-    print(PATH_TO_MODEL)
     model = torch.jit.load(PATH_TO_MODEL)
 
     with open(PATH_TO_METADATA, "r") as f:

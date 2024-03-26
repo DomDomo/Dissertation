@@ -10,8 +10,8 @@ def draw_center_dots(image, pred):
 
     return image
     
-if __name__ == "__main__":
-    with open("./huawei_predictions.json", 'r') as f:
+def make_prediction_image(current, confidence):
+    with open("./current_predictions.json", 'r') as f:
         data = json.load(f)
 
     pred = data[0]
@@ -19,10 +19,12 @@ if __name__ == "__main__":
 
 
     pred["predictions"] = \
-        [p for p in pred["predictions"] if p["confidence"] >= 0.2]
+        [p for p in pred["predictions"] if p["confidence"] >= confidence]
 
-    labels = [str(round(item["confidence"], 5)) for item in pred["predictions"]]
+
+    labels = [str(round(p["confidence"], 5)) for p in pred["predictions"]]
     detections = sv.Detections.from_inference(pred)
+
 
     label_annotator = sv.LabelAnnotator()
     bounding_box_annotator = sv.BoundingBoxAnnotator()
@@ -39,4 +41,4 @@ if __name__ == "__main__":
     annotated_image = draw_center_dots(annotated_image, pred)
     
 
-    cv2.imwrite('annotated_image.jpg', annotated_image)
+    cv2.imwrite(f'annotated_image_round_{current}.jpg', annotated_image)
