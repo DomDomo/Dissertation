@@ -36,6 +36,3 @@ if __name__ == "__main__":
     
 
     cv2.imwrite('annotated_image.jpg', annotated_image)
-
-
-
