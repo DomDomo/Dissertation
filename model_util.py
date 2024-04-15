@@ -1,6 +1,10 @@
 import supervision as sv
 import json
 import cv2
+import json
+import random
+
+from models.webui.webui import get_webui_predictions
 
 
 def draw_center_dots(image, pred):
@@ -40,3 +44,24 @@ def make_prediction_image(current, confidence, folder):
     annotated_image = draw_center_dots(annotated_image, pred)
 
     cv2.imwrite(f'./{folder}/round_{current}.jpg', annotated_image)
+
+
+def get_wanted_clicks(filename, folder, crop_fix, confidence):
+
+    predictions = get_webui_predictions(f"./{folder}/{filename}")
+    predictions["predictions"] = \
+        [p for p in predictions["predictions"] if p["confidence"] >= confidence]
+
+    # Want to press top to bottom, right to left
+    predictions["predictions"] = sorted(
+        predictions["predictions"], key=lambda p: (p['y'], -p['x']))
+
+    # random.shuffle(predictions["predictions"])
+
+    with open(f"./{folder}/current_predictions.json", 'w') as f:
+        json.dump([predictions], f)
+
+    clicks = [(box["x"], box["y"] + crop_fix)
+              for box in predictions["predictions"]]
+
+    return clicks

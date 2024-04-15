@@ -1,44 +1,20 @@
 import os
 import time
-import json
-import random
-from util import *
 
-from models.webui.webui import get_webui_predictions
-from draw_center import make_prediction_image
+from adb_util import *
+from model_util import make_prediction_image, get_wanted_clicks
 
 
-def get_wanted_clicks(filename, folder, crop_fix, confidence):
-
-    predictions = get_webui_predictions(f"./{folder}/{filename}")
-    predictions["predictions"] = \
-        [p for p in predictions["predictions"] if p["confidence"] >= confidence]
-
-    # Want to press top to bottom, right to left
-    predictions["predictions"] = sorted(
-        predictions["predictions"], key=lambda p: (p['y'], -p['x']))
-
-    # random.shuffle(predictions["predictions"])
-
-    with open(f"./{folder}/current_predictions.json", 'w') as f:
-        json.dump([predictions], f)
-
-    clicks = [(box["x"], box["y"] + crop_fix)
-              for box in predictions["predictions"]]
-
-    return clicks
-
+FOLDER = "CookieClicker"
+FILENAME = "screenshot.jpg"
+CONFIDENCE = 0.45
 
 if __name__ == "__main__":
     start_adb_server()
 
     device = get_device()
 
-    FOLDER = "CookieClicker"
-    FILENAME = "screenshot.jpg"
-    CONFIDENCE = 0.45
-
-    # Make Dump Folder
+    # Make Run Folder
     if not os.path.exists(FOLDER):
         os.makedirs(FOLDER)
 
