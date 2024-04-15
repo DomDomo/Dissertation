@@ -25,16 +25,17 @@ def get_device():
     return devices[0]
 
 
-def toggle_pointer_location(device):
-    # Get the current pointer location value
+def toggle_pointer_location(device, activate):
+    new_value = 1 if activate else 0
+
+    device.shell(f'settings put system pointer_location {new_value}')
+
+
+def check_pointer_location(device):
     current_value = int(device.shell(
         'settings get system pointer_location').strip())
 
-    # Toggle the value
-    new_value = 1 - current_value
-
-    # Set the new value
-    device.shell(f'settings put system pointer_location {new_value}')
+    return current_value == 1
 
 
 def get_screen_dimensions(device):
@@ -43,25 +44,31 @@ def get_screen_dimensions(device):
     return width, height
 
 
-def create_screenshot(device, name="screenshot", crop=False, image_format="png"):
+def create_screenshot(device, name="screenshot.jpg", folder="CurrentGame", crop=False):
+    # Turn off Pointer Location if it is enabled
+    if check_pointer_location(device):
+        toggle_pointer_location(device, False)
+
     # Check if the screenshot file exists and delete it if it does
-    if device.shell(f'test -f /sdcard/{name}.{image_format}') == "":
-        device.shell(f'rm /sdcard/{name}.{image_format}')
+    if device.shell(f'test -f /sdcard/{name}') == "":
+        device.shell(f'rm /sdcard/{name}')
 
     # Capture and pull screenshot
-    device.shell(f'screencap -p /sdcard/{name}.{image_format}')
-    device.pull(f'/sdcard/{name}.{image_format}', f'{name}.{image_format}')
+    device.shell(f'screencap -p /sdcard/{name}')
+    device.pull(f'/sdcard/{name}', f'./{folder}/{name}')
 
     # Delete screenshot from device
-    device.shell(f'rm /sdcard/{name}.{image_format}')
+    device.shell(f'rm /sdcard/{name}')
 
     if crop:
-        return crop_notification_bar(name, image_format)
-    
+        image_path = f'./{folder}/{name}'
+        return crop_notification_bar(image_path)
+
     return 0
 
-def crop_notification_bar(image_name, image_format):
-    img = Image.open(f'{image_name}.{image_format}')
+
+def crop_notification_bar(image_path):
+    img = Image.open(image_path)
 
     img_rgb = img.convert("RGB")
 
@@ -80,7 +87,7 @@ def crop_notification_bar(image_name, image_format):
     img_cropped = img_rgb.crop((0, y, width, height))
 
     # Save the cropped image in the specified format
-    img_cropped.save(f'{image_name}.{image_format}')
+    img_cropped.save(image_path)
 
     return y
 
