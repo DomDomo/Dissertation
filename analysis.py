@@ -4,25 +4,16 @@ import cv2
 GAME = "CookieClicker"
 FOLDER = f"ground_truth/{GAME}"
 FILENAME = "main"
-TRUTH_ZONES = [
-    (150, 775, 930, 1560),
-    (30, 2170, 190, 2335),
-    (260, 2195, 395, 2335),
-    (460, 2200, 635, 2340),
-    (685, 2200, 820, 2340),
-    (910, 2200, 1045, 2340),
-]
-FIX = 120
 
 
-def is_center_inside(center, box):
+def is_center_inside(center, box, fix):
     x, y = center
-    y += FIX
+    y += fix
     x1, y1, x2, y2 = box
     return x1 <= x <= x2 and y1 <= y <= y2
 
 
-def draw_predictions(image, centers, truth_zones):
+def draw_predictions(image, centers, truth_zones, fix):
     matched_truth_zones = set()
     tp = 0
     fp = 0
@@ -34,7 +25,7 @@ def draw_predictions(image, centers, truth_zones):
         is_tp = False
         is_duplicate = False
         for j, truth_zone in enumerate(truth_zones):
-            if is_center_inside((x, y), truth_zone):
+            if is_center_inside((x, y), truth_zone, fix):
                 if j in matched_truth_zones:
                     is_duplicate = True
                 else:
@@ -89,8 +80,17 @@ if __name__ == "__main__":
                for pred in preds["predictions"]]
     centers.sort(key=lambda x: x[2], reverse=True)
 
+    with open(f'./ground_truth/zones.json', 'r') as f:
+        truth_data = json.load(f)
+
+    true_game_zones = truth_data[GAME]
+    truth_zones = [
+        image for image in true_game_zones["images"] if image["title"] == FILENAME][0]["zones"]
+    crop_fix = true_game_zones["crop_fix"]
+
     result_image, tp, fp, fn = draw_predictions(
-        true_image.copy(), centers, TRUTH_ZONES)
+        true_image.copy(), centers, truth_zones, crop_fix)
+
     cv2.imwrite(f'./predictions/result_{FILENAME}.jpg', result_image)
 
     precision, recall, f1_score = calculate_metrics(tp, fp, fn)
