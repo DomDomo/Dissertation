@@ -17,7 +17,7 @@ HALLYM_MODEL = "hallym"
 WEBUI_MODEL = "webui"
 
 
-MODEL = WEBUI_MODEL  # Choose model here <--------
+MODEL = HALLYM_MODEL  # Choose model here <--------
 
 
 def get_model_results(model_name, image_path, overlap_threshold=0.5):
@@ -76,18 +76,18 @@ if __name__ == "__main__":
         processed_predictions = get_model_results(MODEL, image_path)
         all_predictions.append(processed_predictions)
 
-        altered_image = display_pred_boxes(
-            processed_predictions, confidence_threshold, image_path)
+        # altered_image = display_pred_boxes(
+        #     processed_predictions, confidence_threshold, image_path)
 
-        # Save the altered image with the new title and path
-        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
-        new_image_path = os.path.join(prediction_folder, new_title)
-        cv2.imwrite(new_image_path, altered_image)
+        # # Save the altered image with the new title and path
+        # new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
+        # new_image_path = os.path.join(prediction_folder, new_title)
+        # cv2.imwrite(new_image_path, altered_image)
 
         print(
             f"Image '{title}' from '{game}' predicted and saved in '{prediction_folder}'")
 
-    with open(f"./predictions/{MODEL}_predictions.json", 'w') as f:
+    with open(f"./predictions/{MODEL}/{MODEL}_predictions.json", 'w') as f:
         json.dump(all_predictions, f)
 
     print("Done.")
