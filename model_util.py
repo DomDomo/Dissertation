@@ -16,12 +16,12 @@ def draw_center_dots(image, pred):
     return image
 
 
-def draw_dead_zones(image, box_coords, fix):
+def draw_dead_zones(image, dead_zones, fix):
     overlay = image.copy()
     # The opacity level of the overlay, between 0 (completely transparent) and 1 (completely opaque)
     opacity = 0.5
 
-    for box in box_coords:
+    for box in dead_zones:
         top_left = (box[0], box[1] - fix)
         bottom_right = (box[2], box[3] - fix)
         cv2.rectangle(overlay, top_left, bottom_right,
