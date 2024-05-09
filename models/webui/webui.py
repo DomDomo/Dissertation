@@ -12,6 +12,12 @@ PATH_TO_METADATA = os.path.join(
     CURRENT_SCRIPT, "./metadata/class_map_vins_manual.json")
 
 
+def initialize_webui():
+    model = torch.jit.load(PATH_TO_MODEL)
+
+    return model
+
+
 def get_prediction_output(model, class_map, image_path):
     # Load and transform the input image
     img_transforms = transforms.ToTensor()
@@ -52,9 +58,7 @@ def get_prediction_output(model, class_map, image_path):
     return image_predictions
 
 
-def get_webui_predictions(image_path):
-    model = torch.jit.load(PATH_TO_MODEL)
-
+def get_webui_predictions(model, image_path):
     with open(PATH_TO_METADATA, "r") as f:
         class_map = json.load(f)
     class_map = class_map['idx2Label']

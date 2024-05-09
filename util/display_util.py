@@ -4,7 +4,7 @@ import threading
 import pygame
 from PIL import Image
 
-SCALE_FACTOR = 3.5
+SCALE_FACTOR = 3
 MARGIN = 5
 
 

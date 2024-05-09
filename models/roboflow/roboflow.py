@@ -17,12 +17,20 @@ ROBOFLOW = {
 }
 
 
+def initialize_roboflow(model_name):
+    rf = Roboflow(api_key=ROBOFLOW_API_KEY)
+    project = rf.workspace().project(ROBOFLOW[model_name]["project"])
+    model = project.version(ROBOFLOW[model_name]["version"]).model
+
+    return model
+
+
 def get_processed_predictions(model, image_path, overlap_threshold=0.5):
     overlap_threshold *= 100
 
     pred = model.predict(
         image_path, confidence=0, overlap=overlap_threshold).json()
-    
+
     # Add the image_path to the image attribute
     image_path = pred['predictions'][0]['image_path']
     pred['image']['path'] = image_path
@@ -52,9 +60,6 @@ def get_processed_predictions(model, image_path, overlap_threshold=0.5):
 
     return pred
 
-def get_roboflow_predictions(model_name, image_path, overlap_threshold=0.5):
-    rf = Roboflow(api_key=ROBOFLOW_API_KEY)
-    project = rf.workspace().project(ROBOFLOW[model_name]["project"])
-    model = project.version(ROBOFLOW[model_name]["version"]).model
 
+def get_roboflow_predictions(model, image_path, overlap_threshold=0.5):
     return get_processed_predictions(model, image_path, overlap_threshold)

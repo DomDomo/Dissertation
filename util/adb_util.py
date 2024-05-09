@@ -44,24 +44,24 @@ def get_screen_dimensions(device):
     return width, height
 
 
-def create_screenshot(device, name="screenshot.jpg", folder="CurrentGame", crop=False):
+def create_screenshot(device, filename, folder, crop=False):
     # Turn off Pointer Location if it is enabled
     if check_pointer_location(device):
         toggle_pointer_location(device, False)
 
     # Check if the screenshot file exists and delete it if it does
-    if device.shell(f'test -f /sdcard/{name}') == "":
-        device.shell(f'rm /sdcard/{name}')
+    if device.shell(f'test -f /sdcard/{filename}') == "":
+        device.shell(f'rm /sdcard/{filename}')
 
     # Capture and pull screenshot
-    device.shell(f'screencap -p /sdcard/{name}')
-    device.pull(f'/sdcard/{name}', f'./{folder}/{name}')
+    device.shell(f'screencap -p /sdcard/{filename}')
+    device.pull(f'/sdcard/{filename}', f'./{folder}/{filename}')
 
     # Delete screenshot from device
-    device.shell(f'rm /sdcard/{name}')
+    device.shell(f'rm /sdcard/{filename}')
 
     if crop:
-        image_path = f'./{folder}/{name}'
+        image_path = f'./{folder}/{filename}'
         return crop_notification_bar(image_path)
 
     return 0

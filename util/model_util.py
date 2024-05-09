@@ -4,8 +4,17 @@ import cv2
 import json
 import random
 
-from models.webui.webui import get_webui_predictions
-from models.roboflow.roboflow import get_roboflow_predictions
+from models.webui.webui import get_webui_predictions, initialize_webui
+from models.roboflow.roboflow import get_roboflow_predictions, initialize_roboflow
+
+
+def initialize_model(model):
+    if model == "webui":
+        webui_model = initialize_webui()
+        return webui_model
+    else:
+        roboflow_model = initialize_roboflow(model)
+        return roboflow_model
 
 
 def draw_center_dots(image, pred):
@@ -61,11 +70,13 @@ def make_prediction_image(folder, filename, current_time, data, dead_zones, crop
     return cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 
 
-def get_predictions(folder, filename, model):
-    if model == "webui":
-        predictions = get_webui_predictions(f"./{folder}/{filename}")
+def get_predictions(folder, filename, model_type, model):
+    image_path = f"./{folder}/{filename}"
+
+    if model_type == "webui":
+        predictions = get_webui_predictions(model, image_path)
     else:
-        predictions = get_roboflow_predictions(model, f"./{folder}/{filename}")
+        predictions = get_roboflow_predictions(model, image_path)
 
     return predictions
 
