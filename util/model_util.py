@@ -5,6 +5,7 @@ import json
 import random
 
 from models.webui.webui import get_webui_predictions
+from models.roboflow.roboflow import get_roboflow_predictions
 
 
 def draw_center_dots(image, pred):
@@ -33,7 +34,7 @@ def draw_dead_zones(image, dead_zones, fix):
     return image
 
 
-def make_prediction_image(folder, filename, current, data, dead_zones, crop_fix):
+def make_prediction_image(folder, filename, current_time, data, dead_zones, crop_fix, save=False):
     image_path = f"./{folder}/{filename}"
 
     labels = [str(round(p["confidence"], 5)) for p in data["predictions"]]
@@ -54,11 +55,17 @@ def make_prediction_image(folder, filename, current, data, dead_zones, crop_fix)
     annotated_image = draw_center_dots(annotated_image, data)
     annotated_image = draw_dead_zones(annotated_image, dead_zones, crop_fix)
 
-    cv2.imwrite(f'./{folder}/round_{current}.jpg', annotated_image)
+    if save:
+        cv2.imwrite(f'./{folder}/{current_time}.jpg', annotated_image)
+
+    return cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 
 
-def get_predictions(folder, filename):
-    predictions = get_webui_predictions(f"./{folder}/{filename}")
+def get_predictions(folder, filename, model):
+    if model == "webui":
+        predictions = get_webui_predictions(f"./{folder}/{filename}")
+    else:
+        predictions = get_roboflow_predictions(model, f"./{folder}/{filename}")
 
     return predictions
 

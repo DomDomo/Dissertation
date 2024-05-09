@@ -17,7 +17,7 @@ HALLYM_MODEL = "hallym"
 WEBUI_MODEL = "webui"
 
 
-MODEL = HALLYM_MODEL  # Choose model here <--------
+MODEL = WEBUI_MODEL  # Choose model here <--------
 
 
 def get_model_results(model_name, image_path, overlap_threshold=0.5):
@@ -31,6 +31,8 @@ def get_model_results(model_name, image_path, overlap_threshold=0.5):
 
 def display_pred_boxes(pred, confidence_threshold, image_path):
     pred_copy = copy.deepcopy(pred)
+
+    print(pred_copy)
 
     pred_copy["predictions"] = \
         [p for p in pred_copy["predictions"]
@@ -57,11 +59,11 @@ def display_pred_boxes(pred, confidence_threshold, image_path):
 if __name__ == "__main__":
     image_paths = glob.glob(f'{ROOT_IMAGE_FOLDER}/**/*.jpg', recursive=False)
 
-    confidence_threshold = 0.2
+    confidence_threshold = 0.45
     overlap_threshold = 0.5
 
     all_predictions = []
-    for image_path in image_paths:
+    for image_path in image_paths[:1]:
         # Extract game and title from the image path
         game, title = image_path.split('\\')[1:]
 
@@ -76,13 +78,13 @@ if __name__ == "__main__":
         processed_predictions = get_model_results(MODEL, image_path)
         all_predictions.append(processed_predictions)
 
-        # altered_image = display_pred_boxes(
-        #     processed_predictions, confidence_threshold, image_path)
+        altered_image = display_pred_boxes(
+            processed_predictions, confidence_threshold, image_path)
 
-        # # Save the altered image with the new title and path
-        # new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
-        # new_image_path = os.path.join(prediction_folder, new_title)
-        # cv2.imwrite(new_image_path, altered_image)
+        # Save the altered image with the new title and path
+        new_title = f"{title.split('.')[0]}_{confidence_threshold:.2f}.jpg"
+        new_image_path = os.path.join(prediction_folder, new_title)
+        cv2.imwrite(new_image_path, altered_image)
 
         print(
             f"Image '{title}' from '{game}' predicted and saved in '{prediction_folder}'")

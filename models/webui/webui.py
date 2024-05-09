@@ -27,6 +27,12 @@ def get_prediction_output(model, class_map, image_path):
     pred = model([img_input])[1]
 
     image_predictions = {
+        "title": f"{game_name}_{base_name}",
+        "image": {
+            "width": rgb_image.size[0],
+            "height": rgb_image.size[1],
+            "path": image_path
+        },
         "predictions": [
             {
                 "x": int((x1 + x2) // 2),
@@ -40,13 +46,7 @@ def get_prediction_output(model, class_map, image_path):
                 "bottom_right": (int(x2), int(y2))
             }
             for i, (x1, y1, x2, y2) in enumerate([box.tolist() for box in pred[0]['boxes']])
-        ],
-        "image": {
-            "width": rgb_image.size[0],
-            "height": rgb_image.size[1],
-            "path": image_path
-        },
-        "title": f"{game_name}_{base_name}"
+        ]
     }
 
     return image_predictions
