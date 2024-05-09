@@ -14,9 +14,7 @@ class DisplayManager:
         self.display_thread = None
         self.screen = None
 
-    def display_images(self, folder, screenshot, annotated):
-        image1 = Image.open(os.path.join(folder, screenshot))
-        image2 = Image.fromarray(annotated)
+    def display_images(self, image1, image2):
 
         # Convert images to Pygame surfaces
         image1_surface = self._make_pygame_image(image1)

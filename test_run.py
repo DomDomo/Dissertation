@@ -81,6 +81,17 @@ def get_upgrade_clicks(model, save=False):
     return clicks, sorted_data
 
 
+def display_screenshots(folder, filename, annotated=None):
+    image1 = Image.open(os.path.join(folder, filename))
+
+    if annotated is not None:
+        image2 = Image.fromarray(annotated)
+    else:
+        image2 = image1
+
+    dm.display_images(image1, image2)
+
+
 if __name__ == "__main__":
     device, model, dm, rp = run_setup()
 
@@ -92,6 +103,8 @@ if __name__ == "__main__":
 
         make_screenshot(next_screenshot_index)
 
+        display_screenshots(FOLDER, FILENAME)
+
         click_generator()
 
         clicks, display_data = get_upgrade_clicks(model)
@@ -101,7 +114,7 @@ if __name__ == "__main__":
             FOLDER, FILENAME, current_time, display_data, DEAD_ZONES, rp)
 
         # Display the images
-        dm.display_images(FOLDER, FILENAME, annotated_image)
+        display_screenshots(FOLDER, FILENAME, annotated_image)
 
         # Make the Clicks
         for x, y in clicks:
