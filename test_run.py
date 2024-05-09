@@ -8,12 +8,12 @@ from util.display_util import *
 
 FOLDER = "Games/IdleSlayer"
 FILENAME = "screenshot.jpg"
-CROP = True
+CROP = False
 MODEL = "webui"
 CONFIDENCE = 0.3
 SORT_TYPE = "random"
-DEAD_ZONES = [(75, 500, 750, 2100)]
-TEMPLATE_IMAGE = "./templates/square_cookie.jpg"
+DEAD_ZONES = [(75, 500, 750, 2100), (540, 2115, 775, 2300)]
+TEMPLATE_IMAGE = "./templates/slayer_coins.jpg"
 TEMPLATE_THRESHOLD = 0.8
 TEMPLATE_CLICK_COUNT = 50
 
@@ -48,7 +48,7 @@ def make_screenshot(next_screenshot_index):
     # Create screenshot at specified intervals
     if next_screenshot_index < len(SCREENSHOT_INTERVALS) and current_time - start_time >= SCREENSHOT_INTERVALS[next_screenshot_index]:
         create_screenshot(
-            device, name=f"{CONFIDENCE}_{current_time}.jpg", folder=FOLDER, crop=CROP)
+            device, f"{CONFIDENCE}_{current_time}.jpg", FOLDER, CROP)
         next_screenshot_index += 1
 
     # Create screenshot for processing
@@ -81,15 +81,16 @@ def get_upgrade_clicks(model, save=False):
     return clicks, sorted_data
 
 
-def display_screenshots(folder, filename, annotated=None):
+def display_screenshots(text, folder, filename, annotated=None):
     image1 = Image.open(os.path.join(folder, filename))
+    template = Image.open(TEMPLATE_IMAGE)
 
     if annotated is not None:
         image2 = Image.fromarray(annotated)
     else:
         image2 = image1
 
-    dm.display_images(image1, image2)
+    dm.display_images(image1, image2, text, template)
 
 
 if __name__ == "__main__":
@@ -103,7 +104,7 @@ if __name__ == "__main__":
 
         make_screenshot(next_screenshot_index)
 
-        display_screenshots(FOLDER, FILENAME)
+        display_screenshots("Clicking Generator", FOLDER, FILENAME)
 
         click_generator()
 
@@ -114,7 +115,8 @@ if __name__ == "__main__":
             FOLDER, FILENAME, current_time, display_data, DEAD_ZONES, rp)
 
         # Display the images
-        display_screenshots(FOLDER, FILENAME, annotated_image)
+        display_screenshots("Clicking Upgrades", FOLDER,
+                            FILENAME, annotated_image)
 
         # Make the Clicks
         for x, y in clicks:
