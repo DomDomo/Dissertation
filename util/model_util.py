@@ -65,7 +65,8 @@ def make_prediction_image(folder, filename, current_time, data, dead_zones, crop
     annotated_image = draw_dead_zones(annotated_image, dead_zones, crop_fix)
 
     if save:
-        cv2.imwrite(f'./{folder}/{current_time}.jpg', annotated_image)
+        file = f'./Games/{current_time}.jpg'
+        cv2.imwrite(file, annotated_image)
 
     return cv2.cvtColor(annotated_image, cv2.COLOR_BGR2RGB)
 

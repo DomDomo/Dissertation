@@ -27,9 +27,9 @@ class DisplayManager:
         blank_image_surface = pygame.Surface(
             (image1.width // SCALE_FACTOR, image1.height // SCALE_FACTOR))
         tiny_width, tiny_height = tiny_image_surface.get_size()
-        if tiny_width > 500:
-            scale_factor = 500 / tiny_width
-            tiny_width = 500
+        if tiny_width > 150:
+            scale_factor = 150 / tiny_width
+            tiny_width = 150
             tiny_height = int(tiny_height * scale_factor)
             tiny_image_surface = pygame.transform.scale(
                 tiny_image_surface, (tiny_width, tiny_height))

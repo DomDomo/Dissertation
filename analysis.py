@@ -4,7 +4,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-MODEL = "hallym"
+MODEL = "webui"
 GROUND_TRUTH_FOLDER = "ground_truth"
 PREDICTIONS_FOLDER = f"predictions/{MODEL}"
 PREDICTIONS_FILE = f"{MODEL}_predictions.json"
@@ -65,8 +65,8 @@ def process_image(image_data, game, truth_zones, crop_fix, predictions):
         for center in centers:
             draw_prediction(image, center, truth_zones, crop_fix)
 
-    output_path = os.path.join(CENTER_DOTS_FOLDER, f"{
-                               game}_result_{filename}.jpg")
+    output_path = os.path.join(
+        CENTER_DOTS_FOLDER, f"{game}_result_{filename}.jpg")
     cv2.imwrite(output_path, image["data"])
 
 
@@ -152,13 +152,17 @@ def plot_evaluation_results(evaluation_results):
     plt.plot(confidence_thresholds, precisions, marker='o', label='Precision')
     plt.plot(confidence_thresholds, recalls, marker='o', label='Recall')
     plt.plot(confidence_thresholds, f1_scores, marker='o', label='F1 Score')
+
     plt.xlabel('Confidence Threshold')
     plt.ylabel('Score')
-    plt.title('Evaluation Metrics vs. Confidence Threshold')
-    plt.legend()
+    plt.title('Evaluation Metrics vs Confidence Threshold')
+
+    plt.legend(loc='upper right')
+
     plt.grid(True)
     plt.xticks(confidence_thresholds)
     plt.yticks(np.arange(0, 1.1, 0.1))  # Set y ticks to 0.1 intervals
+
     plt.savefig(os.path.join(PREDICTIONS_FOLDER, 'evaluation_graph.png'))
     plt.close()
 

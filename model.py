@@ -7,8 +7,8 @@ import os
 import copy
 
 
-from models.roboflow.roboflow import get_roboflow_predictions
-from models.webui.webui import get_webui_predictions
+from models.roboflow.roboflow import get_roboflow_predictions, initialize_roboflow
+from models.webui.webui import get_webui_predictions, initialize_webui
 
 ROOT_IMAGE_FOLDER = "./idle_images"
 
@@ -17,14 +17,16 @@ HALLYM_MODEL = "hallym"
 WEBUI_MODEL = "webui"
 
 
-MODEL = WEBUI_MODEL  # Choose model here <--------
+MODEL = HALLYM_MODEL  # Choose model here <--------
 
 
 def get_model_results(model_name, image_path, overlap_threshold=0.5):
     if model_name == HUAWEI_MODEL or model_name == HALLYM_MODEL:
+        model_name = initialize_roboflow(model_name)
         return get_roboflow_predictions(model_name, image_path, overlap_threshold)
     elif model_name == WEBUI_MODEL:
-        return get_webui_predictions(image_path)
+        model_name = initialize_webui()
+        return get_webui_predictions(model_name, image_path)
 
     return -1
 
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     overlap_threshold = 0.5
 
     all_predictions = []
-    for image_path in image_paths[:1]:
+    for image_path in image_paths:
         # Extract game and title from the image path
         game, title = image_path.split('\\')[1:]
 
