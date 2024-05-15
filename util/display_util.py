@@ -100,21 +100,6 @@ class DisplayManager:
             self.screen.blit(blank_image_surface, (image1_surface.get_width(
             ) + image2_surface.get_width() + MARGIN * 3, MARGIN))
 
-            # # Add text to the top of the blank surface
-            # font = pygame.font.Font(None, 36)
-            # text = font.render("Top Text", True, (255, 255, 255))
-            # text_rect = text.get_rect()
-            # text_rect.midtop = (image1_surface.get_width(
-            # ) + image2_surface.get_width() + blank_image_surface.get_width() // 2 + MARGIN * 3, MARGIN)
-            # self.screen.blit(text, text_rect)
-
-            # # Add text to the middle of the blank surface
-            # text = font.render("Middle Text", True, (255, 255, 255))
-            # text_rect = text.get_rect()
-            # text_rect.midtop = (image1_surface.get_width() + image2_surface.get_width(
-            # ) + blank_image_surface.get_width() // 2 + MARGIN * 3, blank_image_surface.get_height() // 2 + MARGIN)
-            # self.screen.blit(text, text_rect)
-
             pygame.display.flip()
 
     def _make_pygame_image(self, image):

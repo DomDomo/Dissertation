@@ -17,7 +17,7 @@ HALLYM_MODEL = "hallym"
 WEBUI_MODEL = "webui"
 
 
-MODEL = HALLYM_MODEL  # Choose model here <--------
+MODEL = HALLYM_MODEL
 
 
 def get_model_results(model_name, image_path, overlap_threshold=0.5):

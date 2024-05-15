@@ -161,7 +161,7 @@ def plot_evaluation_results(evaluation_results):
 
     plt.grid(True)
     plt.xticks(confidence_thresholds)
-    plt.yticks(np.arange(0, 1.1, 0.1))  # Set y ticks to 0.1 intervals
+    plt.yticks(np.arange(0, 1.1, 0.1))
 
     plt.savefig(os.path.join(PREDICTIONS_FOLDER, 'evaluation_graph.png'))
     plt.close()
@@ -206,6 +206,5 @@ def main_evaluate_thresholds():
 
 
 if __name__ == "__main__":
-    # Uncomment the desired main function to run
     main_generate_images()
     main_evaluate_thresholds()

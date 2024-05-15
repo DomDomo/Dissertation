@@ -93,9 +93,6 @@ def crop_notification_bar(image_path):
 
 
 def tap_screen(device, x, y):
-    # Swipe before tap:
-    # device.shell(f"input touchscreen swipe {x-2} {y} {x+2} {y} {duration}")
-
     device.shell(f"input touchscreen tap {x} {y}")
 
 

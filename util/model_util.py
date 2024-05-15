@@ -28,14 +28,13 @@ def draw_center_dots(image, pred):
 
 def draw_dead_zones(image, dead_zones, fix):
     overlay = image.copy()
-    # The opacity level of the overlay, between 0 (completely transparent) and 1 (completely opaque)
     opacity = 0.5
 
     for box in dead_zones:
         top_left = (box[0], box[1] - fix)
         bottom_right = (box[2], box[3] - fix)
         cv2.rectangle(overlay, top_left, bottom_right,
-                      (0, 0, 255), -1)  # -1 fills the rectangle
+                      (0, 0, 255), -1)
 
     # Blend the original image with the overlay
     cv2.addWeighted(overlay, opacity, image, 1 - opacity, 0, image)
