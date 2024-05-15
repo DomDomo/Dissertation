@@ -9,11 +9,10 @@ from util.display_util import *
 
 # Game
 GAME = "CookieClicker"
-CROP = False
 
 # Program
 TEMPLATE_THRESHOLD = 0.9
-TEMPLATE_CLICK_COUNT = 100
+TEMPLATE_CLICK_COUNT = 50
 MODEL = "hallym"
 CONFIDENCE = 0.1
 SORT_TYPE = "random"
@@ -22,10 +21,13 @@ SORT_TYPE = "random"
 FOLDER = f"Games/{GAME}"
 FILENAME = "screenshot.jpg"
 
-# Time in seconds
-CLICK_DURATION = 21 * 60  # 11 minutes
-SCREENSHOT_INTERVALS = [60, 5 * 60, 10 * 60, 15 *
-                        60, 20 * 60]  # 1 minute, 5 minutes, 10 minutes
+# Time
+CLICK_DURATION_MINUTES = 21
+CLICK_DURATION = CLICK_DURATION_MINUTES * 60
+
+SCREENSHOT_INTERVALS_MINUTES = [1, 5, 10, 15, 20]
+SCREENSHOT_INTERVALS = [
+    interval * 60 for interval in SCREENSHOT_INTERVALS_MINUTES]
 
 
 def run_setup():
@@ -43,54 +45,60 @@ def run_setup():
     # Initialize the DisplayManager
     display_manager = DisplayManager()
 
+    # Get Game Data
+    template, deadzones, crop = get_game_data(GAME)
+
     # Make initial Screenshot
     removed_pixels = create_screenshot(
-        device, FILENAME, FOLDER, CROP)
+        device, FILENAME, FOLDER, crop)
 
-    template, deadzones = get_game_data(GAME)
-
-    return device, model, display_manager, removed_pixels, template, deadzones
+    return device, model, display_manager, removed_pixels, template, deadzones, crop
 
 
 def get_game_data(game):
     game_templates = {
         "IdleSlayer": {
             "template": "slayer_coins",
-            "deadzones": [(75, 500, 450, 2100), (300, 2115, 775, 2300), (270, 510, 750, 1525), (340, 2000, 1015, 2080)]
+            "deadzones": [(75, 500, 450, 2100), (300, 2115, 775, 2300), (270, 510, 750, 1525), (340, 2000, 1015, 2080)],
+            "crop": False
         },
         "CookieClicker": {
             "template": "square_cookie",
             "deadzones": [(450, 2200, 1080, 2335), (250, 2000,
-                                                    1040, 2170), (862, 320, 1015, 1952)]
+                                                    1040, 2170), (862, 320, 1015, 1952)],
+            "crop": True
         },
         "UniversalPaperclips": {
             "template": "MakePaperclip",
-            "deadzones": [(1000, 60, 1065, 105)]
+            "deadzones": [(1000, 60, 1065, 105)],
+            "crop": False
         },
 
         "ClickerHeroes": {
             "template": "ch_skull",
             "deadzones": [(20, 375, 150, 640), (70, 220,
-                                                1000, 320), (190, 1480, 680, 2220), (15, 2250, 520, 2310), (0, 1360, 152, 1430)]
+                                                1000, 320), (190, 1480, 680, 2220), (15, 2250, 520, 2310), (0, 1360, 152, 1430)],
+            "crop": False
         },
     }
 
     template_name = game_templates[game]["template"]
-    return f"./templates/{template_name}.jpg", game_templates[game]["deadzones"]
+    deadzones = game_templates[game]["deadzones"]
+    crop = game_templates[game]["crop"]
+
+    return f"./templates/{template_name}.jpg", deadzones, crop
 
 
-def make_screenshot(next_screenshot_index, start_time, current_time):
-    print(next_screenshot_index)
-    print((current_time - start_time))
+def make_screenshot(next_screenshot_index, start_time, current_time, crop):
     if next_screenshot_index < len(SCREENSHOT_INTERVALS) and (current_time - start_time) >= SCREENSHOT_INTERVALS[next_screenshot_index]:
         create_screenshot(
-            device, f"{CONFIDENCE}_{current_time}.jpg", FOLDER, CROP)
+            device, f"{CONFIDENCE}_{current_time}.jpg", FOLDER, crop)
         next_screenshot_index += 1
 
         return True
 
     # Create screenshot for processing
-    create_screenshot(device, FILENAME, FOLDER, CROP)
+    create_screenshot(device, FILENAME, FOLDER, crop)
 
     # Turn on Pointer Location (for visualization)
     toggle_pointer_location(device, True)
@@ -134,7 +142,7 @@ def display_screenshots(text, folder, filename, template, annotated=None):
 
 
 if __name__ == "__main__":
-    device, model, dm, rp, template, deadzones = run_setup()
+    device, model, dm, rp, template, deadzones, crop = run_setup()
 
     start_time = time.time()
     next_screenshot_index = 0
@@ -143,7 +151,7 @@ if __name__ == "__main__":
         current_time = int(time.time())
 
         made_interval_screenshot = make_screenshot(
-            next_screenshot_index, start_time, current_time)
+            next_screenshot_index, start_time, current_time, crop)
         if made_interval_screenshot:
             next_screenshot_index += 1
 
@@ -153,15 +161,11 @@ if __name__ == "__main__":
 
         clicks, display_data = get_upgrade_clicks(model, deadzones)
 
-        # Create the Highlight Image
         annotated_image = make_prediction_image(
             FOLDER, FILENAME, current_time, display_data, deadzones, rp, save=True)
 
-        # Display the images
         display_screenshots("Clicking Upgrades", FOLDER,
                             FILENAME, template, annotated_image)
 
-        # Make the Clicks
         for x, y in clicks:
-            # print(x, y)
             tap_screen(device, x, y)
